@@ -82,6 +82,22 @@ def editar_produto():
     conn.commit()
     print('Produto atualizado com sucesso!')
 
+def excluir_produto():
+    resultado = procurar_codigo()
+    if not resultado:
+        print('Produto não encontrado!')
+        return
+
+    id_, descricao, quantidade, preco = resultado
+    print(f'Produto localizado -- ID: COD-{id_:03d} | Nome: {descricao} | Qtd: {quantidade} | Preço: {preco}')
+    confirma = input('Deseja realmente excluir este produto? (s/n): ').strip().lower()
+
+    if confirma == 's':
+        cur.execute('UPDATE produto SET ativo = 0 WHERE id = ?', (id_,))
+        conn.commit()
+        print('Produto excluído com sucesso!')
+    else:
+        print('Operação cancelada.')
 
 print('Seja muito bem vindo ao sistema\n -- CONTROLE DE SUPRIMENTOS --')
 nome_usuario = input('Por favor, digite seu nome: ').strip()
@@ -92,7 +108,7 @@ print('   SUPPLY CONTROL')
 print('==' * 10)
 
 while True:
-    print(' 1 - Cadastrar Produto\n 2 - Listar Produtos\n 3 - Procurar Produto\n 4 - Editar Produto\n 0 - Sair ')
+    print(' 1 - Cadastrar Produto\n 2 - Listar Produtos\n 3 - Procurar Produto\n 4 - Editar Produto\n 5 - Excluir Produto\n 0 - Sair ')    
     op = input("Digite uma opção: ").strip()
 
     if op == "1":
@@ -107,6 +123,8 @@ while True:
             print('Produto não encontrado!')
     elif op == '4':
         editar_produto()
+    elif op == '5':
+        excluir_produto()
     elif op == '0':
         print('Até logo!')
         break
