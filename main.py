@@ -14,11 +14,45 @@ cur.execute('''
 conn.commit()
 
 
+def ler_texto(mensagem):
+    while True:
+        valor = input(mensagem).strip()
+        if valor:
+            return valor
+        print('Erro: este campo não pode ficar vazio.')
+
+
+def ler_inteiro(mensagem, minimo=0):
+    while True:
+        try:
+            valor = int(input(mensagem))
+        except ValueError:
+            print('Erro: digite um número inteiro (ex.: 10).')
+            continue
+        if valor < minimo:
+            print(f'Erro: o valor deve ser no mínimo {minimo}.')
+            continue
+        return valor
+
+
+def ler_decimal(mensagem, minimo=0):
+    while True:
+        try:
+            valor = float(input(mensagem).replace(',', '.'))
+        except ValueError:
+            print('Erro: digite um número válido (ex.: 12.50).')
+            continue
+        if valor < minimo:
+            print(f'Erro: o valor deve ser no mínimo {minimo}.')
+            continue
+        return valor
+
+
 def cadastrar_produto():
     print('Informe os dados do produto:')
-    descricao = input('Qual a descrição do produto?: ').strip()
-    quantidade = int(input('Qual a quantidade dele?: '))
-    preco = float(input('Qual o valor da última compra dele?: '))
+    descricao = ler_texto('Qual a descrição do produto?: ')
+    quantidade = ler_inteiro('Qual a quantidade dele?: ')
+    preco = ler_decimal('Qual o valor da última compra dele?: ')
 
     cur.execute(
         'INSERT INTO produto (descricao, quantidade, preco) VALUES (?, ?, ?)',
@@ -64,13 +98,13 @@ def editar_produto():
     input_op = input('Selecione a opção que deseja editar: ').strip()
 
     if input_op == '1':
-        novo = input('Digite o nome correto do produto: ').strip()
+        novo = ler_texto('Digite o nome correto do produto: ')
         cur.execute('UPDATE produto SET descricao = ? WHERE id = ?', (novo, id_))
     elif input_op == '2':
-        novo = int(input('Digite a quantidade correta do produto: '))
+        novo = ler_inteiro('Digite a quantidade correta do produto: ')
         cur.execute('UPDATE produto SET quantidade = ? WHERE id = ?', (novo, id_))
     elif input_op == '3':
-        novo = float(input('Digite o novo preço do produto: '))
+        novo = ler_decimal('Digite o novo preço do produto: ')
         cur.execute('UPDATE produto SET preco = ? WHERE id = ?', (novo, id_))
     elif input_op == '0':
         print('Voltando ao menu principal...')
@@ -81,6 +115,7 @@ def editar_produto():
 
     conn.commit()
     print('Produto atualizado com sucesso!')
+
 
 def excluir_produto():
     resultado = procurar_codigo()
@@ -99,6 +134,7 @@ def excluir_produto():
     else:
         print('Operação cancelada.')
 
+
 print('Seja muito bem vindo ao sistema\n -- CONTROLE DE SUPRIMENTOS --')
 nome_usuario = input('Por favor, digite seu nome: ').strip()
 print(f'É um prazer ter você aqui, {nome_usuario}!')
@@ -108,7 +144,7 @@ print('   SUPPLY CONTROL')
 print('==' * 10)
 
 while True:
-    print(' 1 - Cadastrar Produto\n 2 - Listar Produtos\n 3 - Procurar Produto\n 4 - Editar Produto\n 5 - Excluir Produto\n 0 - Sair ')    
+    print(' 1 - Cadastrar Produto\n 2 - Listar Produtos\n 3 - Procurar Produto\n 4 - Editar Produto\n 5 - Excluir Produto\n 0 - Sair ')
     op = input("Digite uma opção: ").strip()
 
     if op == "1":
